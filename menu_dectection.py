@@ -9,7 +9,6 @@ useCamera = False
 cap = cv.VideoCapture(0)
 
 
-#helper functions
 def scan_dectection(img,size,og_img):
     frame = cv.detailEnhance(img, sigma_s=20, sigma_r=0.15)
     #doc_contour = np.array([[0, 0], [width, 0], [width, height], [0, height]])
@@ -43,15 +42,15 @@ def scan_dectection(img,size,og_img):
             
     #draw contours
     cv.drawContours(img, [points], -1, (0, 255, 0), 3)
+    cv.imshow("Contours", img)
     #set points to orignal image
     multiplier = og_img.shape[1] / size[0]
     og_points = points * multiplier #resize points to orignal image
     og_points = og_points.astype(int)
-    warp_img = four_point_transform(og_img, og_points)
-    cv.imshow("Warp", warp_img)
+    warp_img = four_point_transform(img, og_points)
+    #cv.imshow("Warp", warp_img)
     #cv.imshow("Frame", img)
 
-#Resizing the frame/imaged based on width and set a aspect ratio
 def resizer(frame,width=500):
     h,w,_ = frame.shape
     height=int((h/w)*width)
@@ -60,23 +59,25 @@ def resizer(frame,width=500):
     return new_frame,size
 
 ###Main####
-while True:
+def information_found(useCamera = False,imgPath = 'img\menu_1.jpg'):
     if useCamera:
         
         ret, frame = cap.read()
     else:
-        frame = cv.imread("menu_1.jpg")
+        frame = cv.imread(imgPath)
+
+    frame,size = resizer(frame)    
+    inverted = cv.bitwise_not(frame)
+    grey = cv.cvtColor(inverted,cv.COLOR_BGR2GRAY)
+    #scan_dectection(inverted,size,frame)
+    #thresh,im_bw = cv.threshold(grey,0,255,cv.THRESH_BINARY|cv.THRESH_OTSU)
+    #cv.imshow('frame',im_bw)
+    cv.imshow('frame',grey)
+    cv.imwrite('invert.jpg',inverted)
 
     
-    cv.imshow("frame", frame)
-
-    #new_frame, size = resizer(frame)
-    #scan_dectection(new_frame,size,frame)
-    pytesseract.image_to_string(Image.open("menu_1.jpg"))
-
-    cv.imshow("Test", frame)
-
-
-
-    if cv.waitKey(1) & 0xFF == ord('q'):
-        break
+    
+   
+    pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    results = pytesseract.image_to_string(Image.open("invert.jpg"))
+    return results
