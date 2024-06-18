@@ -6,16 +6,18 @@ from langchain_core.prompts import ChatPromptTemplate
 import re
 from pathlib import Path
 from typing import Callable, Union
-
+from dotenv import load_dotenv
 from langchain_community.chat_message_histories import FileChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables.history import RunnableWithMessageHistory
-
+from langchain.agents import initialize_agent
 from tools import *
 
+env_path = Path('.env')
+load_dotenv(dotenv_path=env_path)
 
-key = "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"
+key = os.getenv("NVIDIA_KEY")
 from tempfile import TemporaryDirectory
 
 from langchain_community.agent_toolkits import FileManagementToolkit
@@ -58,10 +60,8 @@ def create_session_factory(
 
 
 chat_prompts = ChatPromptTemplate.from_messages( [
-        ("system", "You are a helpful Menu Analyzer AI bot that categorizes menu items with tags of possible allergens and ingrediants. You also can answer questions about the given food items or about food in general,based upon what the human asks. Your name is Kridic."),
+        ("system", "You are a helpful Menu Analyzer AI bot that categorizes menu items with tags of possible allergens and ingrediants. You also can answer questions about the given food items or about food in general,based upon what the human asks.  Your name is Kridic."),
         ("human","{human_input}"),
-
-        MessagesPlaceholder(variable_name="history"),
     ])
 
 
@@ -83,15 +83,9 @@ tools.append(extract_menu_info)
 
 
 chain = chat_prompts |chatter | StrOutputParser()
-chain_with_history = RunnableWithMessageHistory(
-    chain,
-    create_session_factory("chat_histories"),
-    input_messages_key="human_input",
-    history_messages_key="history",
 
-)
 
-agent = initialize_agent(tools=tools,llm=chain)
+#agent = initialize_agent(tools=tools,llm=chain)
 
 
 

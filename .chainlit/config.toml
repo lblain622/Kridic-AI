@@ -51,7 +51,7 @@ auto_tag_thread = true
 
 [UI]
 # Name of the assistant.
-name = "Assistant"
+name = "Kridic"
 
 # Description of the assistant. This is used for HTML tags.
 # description = ""
@@ -63,7 +63,7 @@ default_collapse_content = true
 hide_cot = false
 
 # Link to your github repo. This will add a github button in the UI's header.
-# github = ""
+# github = "https://github.com/lb5562/Gen-AI-Contest"
 
 # Specify a CSS file that can be used to customize the user interface.
 # The CSS file can be served from the public directory or via an external link.
