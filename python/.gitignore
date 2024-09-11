@@ -1,6 +1,0 @@
-.env
-.conda/
-.chainlit/
-.cache/
-.config/
-__pycache__/
